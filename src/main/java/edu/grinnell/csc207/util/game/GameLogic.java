@@ -24,6 +24,21 @@ public class GameLogic {
    */
   static final int DEFAULT_HEIGHT = 6;
 
+  /**
+   * The ANSI code for the color white.
+   */
+  static final String ANSI_RESET = "\u001B[0m";
+
+  /**
+   * The ANSI code for the color green.
+   */
+  static final String ANSI_GREEN = "\u001B[32m";
+
+  /**
+   * The ANSI code for the color yellow.
+   */
+  static final String ANSI_YELLOW = "\u001B[33m";
+
   // +--------+---------------------------------------------------
   // | Fields |
   // +--------+
@@ -40,6 +55,8 @@ public class GameLogic {
 
   /**
    * The target word.
+   *
+   * Should have method like getTargetWord() and checkValidEnglishWord()
    */
   private Words targetWord;
 
@@ -53,7 +70,6 @@ public class GameLogic {
   public GameLogic() {
     this.board = new MatrixV0<>(GameLogic.DEFAULT_WIDTH, GameLogic.DEFAULT_HEIGHT, "");
 
-    // TODO: Use Words class to get word for this game
     this.targetWord = new Words();
   } // GameLogic()
 
@@ -61,13 +77,49 @@ public class GameLogic {
   // | Methods |
   // +---------+
 
+  public int getGuessLeft() {
+    return this.guessLeft;
+  } // getGuessLeft()
+
+  private int decrementGuessLeft() {
+    return this.guessLeft--;
+  } // decrementGuessLeft()
+
   /**
-   * toString
+   * toString prints the board in format.
    */
 
   /**
-   * registerGuess
+   * Register a guess into the board.
+   *
+   * @param guess User's input
+   * @return true if the guess get registered successfully and false otherwise
    */
+  public boolean registerGuess(String guess) {
+    guess = guess.toUpperCase();
 
+    if (this.getGuessLeft() == 0) {
+      return false;
+    } // if
+
+    if (!this.targetWord.checkValidEnglishWord(guess)) {
+      return false;
+    } // if
+
+    this.decrementGuessLeft();
+
+    for (int i = 0; i < guess.length(); i++) {
+      char c = guess.charAt(i);
+      if (targetWord.getTarget().charAt(i) == c) {
+        this.board.set(i, 5 - this.getGuessLeft(), ANSI_GREEN + c + ANSI_RESET);
+      } else if (targetWord.getTarget().contains(String.valueOf(c))) {
+        this.board.set(i, 5 - this.getGuessLeft(), ANSI_YELLOW + c + ANSI_RESET);
+      } else {
+        this.board.set(i, 5 - this.getGuessLeft(), c + "");
+      } // if/else
+    } // for
+
+    return true;
+  } // registerGuess(String)
 
 } // class GameLogic

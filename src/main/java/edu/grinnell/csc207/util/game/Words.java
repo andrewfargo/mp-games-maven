@@ -1,17 +1,23 @@
 package edu.grinnell.csc207.util.game;
 
 public class Words {
-  public Words() {
+  String target;
 
+  public Words() {
+    target = getRandomWord();
   } // Words()
 
   // getRandomWord()
-  public String getRandomWord() {
-    return "hello";
+  private String getRandomWord() {
+    return "HELLO";
   } // getRandomWord()
+
+  public String getTarget() {
+    return target;
+  } // getTarget()
 
   // checkValidEnglishWord()
   public boolean checkValidEnglishWord(String word) {
-    return true;
+    return (word.length() == 5); // TODO: other logic
   } // checkValidEnglishWord()
 } // class Words
