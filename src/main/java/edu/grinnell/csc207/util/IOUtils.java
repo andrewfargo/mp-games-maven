@@ -3,8 +3,9 @@ package edu.grinnell.csc207.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 import java.util.Arrays;
+
+import edu.grinnell.csc207.util.matrix.ArrayUtils;
 
 /**
  * A variety of utilities for getting input.
