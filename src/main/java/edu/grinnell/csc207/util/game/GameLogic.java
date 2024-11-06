@@ -15,11 +15,6 @@ public class GameLogic {
   // +-----------+
 
   /**
-   * The default width.
-   */
-  static final int DEFAULT_WIDTH = 5;
-
-  /**
    * The default number of rows.
    */
   static final int DEFAULT_HEIGHT = 6;
@@ -44,21 +39,25 @@ public class GameLogic {
   // +--------+
 
   /**
-   * The number of guesses the player has left.
-   */
-  private int guessLeft = DEFAULT_HEIGHT;
-
-  /**
    * The current state of the board.
    */
   private Matrix<String> board;
 
   /**
-   * The target word.
-   *
-   * Should have method like getTargetWord() and checkValidEnglishWord()
+   * Handles generation and validation of words.
    */
-  private Words targetWord;
+  private Words words;
+
+  /**
+   * The number of guesses the player has left.
+   */
+  private int guessLeft;
+
+  /**
+   * Current target word.
+   */
+  private String target;
+
 
   // +-------------+---------------------------------------------------
   // | Constructor |
@@ -67,10 +66,9 @@ public class GameLogic {
   /**
    * Create a new game.
    */
-  public GameLogic() {
-    this.board = new MatrixV0<>(GameLogic.DEFAULT_WIDTH, GameLogic.DEFAULT_HEIGHT, "");
-
-    this.targetWord = new Words();
+  public GameLogic(String wordlist, String checklist, String savefile, long seed, int guesses) {
+    this.words = new Words(wordlist, checklist, seed);
+    this.guessLeft = guesses;
   } // GameLogic()
 
   // +---------+---------------------------------------------------
