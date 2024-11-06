@@ -29,6 +29,7 @@ public class Words implements Iterator<String>, Predicate<String> {
   /** How many words exist in the wordlist. */
   private int length;
 
+  /** The random number generator. */
   private Random rng;
 
   /**
@@ -102,6 +103,6 @@ public class Words implements Iterator<String>, Predicate<String> {
       return Files.lines(this.checklist).parallel().anyMatch((e) -> word.equals(e));
     } catch (Exception e) {
       throw new RuntimeException("IO ERROR: " + this.checklist + " File no longer valid.");
-    }
+    } // try/catch
   } // pred(String)
 } // class Words
