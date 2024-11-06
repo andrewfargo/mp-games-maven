@@ -13,7 +13,7 @@ public class GameLogic {
   // +-----------+---------------------------------------------------
   // | Constants |
   // +-----------+
-
+  
   /**
    * The default number of rows.
    */
@@ -49,9 +49,14 @@ public class GameLogic {
   private Words words;
 
   /**
-   * The number of guesses the player has left.
+   * The number of guesses the player is allowed.
    */
-  private int guessLeft;
+  private int guessesAllowed;
+  
+  /**
+   * The number of guesses the player has made.
+   */
+  private int guessesMade;
 
   /**
    * Current target word.
@@ -68,56 +73,68 @@ public class GameLogic {
    */
   public GameLogic(String wordlist, String checklist, String savefile, long seed, int guesses) {
     this.words = new Words(wordlist, checklist, seed);
-    this.guessLeft = guesses;
+    this.guessesAllowed = guesses;
   } // GameLogic()
 
   // +---------+---------------------------------------------------
   // | Methods |
   // +---------+
 
-  public int getGuessLeft() {
-    return this.guessLeft;
-  } // getGuessLeft()
-
-  private int decrementGuessLeft() {
-    return this.guessLeft--;
-  } // decrementGuessLeft()
-
   /**
-   * toString prints the board in format.
+   * Reset and select a new word.
    */
+  private void reset() {
+    this.guessesMade = 0;
+    this.target = words.next();
+    this.board = new MatrixV0<String>(this.target.length(), this.guessesAllowed, " ");
+  } // reset()
 
   /**
    * Register a guess into the board.
    *
    * @param guess User's input
-   * @return true if the guess get registered successfully and false otherwise
+   * @return Current game state.
+   * @see edu.grinnell.csc207.util.game.GameState
    */
-  public boolean registerGuess(String guess) {
-    guess = guess.toUpperCase();
+  public GameState registerGuess(String guess) {
+    guess = guess.toLowerCase();
 
-    if (this.getGuessLeft() == 0) {
-      return false;
+    if (!words.test(guess) || guess.length() != target.length()) {
+      return GameState.REDO;
     } // if
-
-    if (!this.targetWord.checkValidEnglishWord(guess)) {
-      return false;
-    } // if
-
-    this.decrementGuessLeft();
-
+    
+    this.guessesMade++;
     for (int i = 0; i < guess.length(); i++) {
       char c = guess.charAt(i);
-      if (targetWord.getTarget().charAt(i) == c) {
-        this.board.set(i, 5 - this.getGuessLeft(), ANSI_GREEN + c + ANSI_RESET);
-      } else if (targetWord.getTarget().contains(String.valueOf(c))) {
-        this.board.set(i, 5 - this.getGuessLeft(), ANSI_YELLOW + c + ANSI_RESET);
+      if (target.charAt(i) == c) {
+        this.board.set(i, guessesMade, ANSI_GREEN + c + ANSI_RESET);
+      } else if (target.indexOf(c) != -1) {
+        this.board.set(i, guessesMade, ANSI_YELLOW + c + ANSI_RESET);
       } else {
-        this.board.set(i, 5 - this.getGuessLeft(), c + "");
+        this.board.set(i, guessesMade, c + "");
       } // if/else
     } // for
 
-    return true;
+    if (guess.equals(target)) {
+      return GameState.WIN;
+    } else if (guessesMade == guessesAllowed) {
+      return GameState.LOSE;
+    } else {
+      return GameState.CONTINUE;
+    } // if/else
   } // registerGuess(String)
-
 } // class GameLogic
+
+/**
+ * Possible returns on word entry.
+ */
+public enum GameState {
+  /** Continue accepting input. */
+  CONTINUE,
+  /** Word invalid, try again. */
+  REDO,
+  /** Word is target. */
+  WIN,
+  /** Ran out of guesses. */
+  LOSE
+} // enum GameState
