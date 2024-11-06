@@ -68,7 +68,7 @@ public class GameLogic {
    * Create a new game.
    */
   public GameLogic() {
-    this.board = new MatrixV0<>(GameLogic.DEFAULT_WIDTH, GameLogic.DEFAULT_HEIGHT, "");
+    this.board = new MatrixV0<>(GameLogic.DEFAULT_WIDTH, GameLogic.DEFAULT_HEIGHT, " ");
 
     this.targetWord = new Words();
   } // GameLogic()
@@ -91,7 +91,7 @@ public class GameLogic {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    String horizontalLine = "+--".repeat(GameLogic.DEFAULT_WIDTH) + "+\n";
+    String horizontalLine = "+----".repeat(GameLogic.DEFAULT_WIDTH - 1) + "+\n";
 
     for (int row = 0; row < GameLogic.DEFAULT_HEIGHT; row++) {
       sb.append(horizontalLine);
@@ -126,16 +126,27 @@ public class GameLogic {
 
     for (int i = 0; i < guess.length(); i++) {
       char c = guess.charAt(i);
+      int row = 5 - this.getGuessLeft();
+      int col = i;
       if (targetWord.getTarget().charAt(i) == c) {
-        this.board.set(i, 5 - this.getGuessLeft(), ANSI_GREEN + c + ANSI_RESET);
+        this.board.set(row, col, ANSI_GREEN + c + ANSI_RESET);
       } else if (targetWord.getTarget().contains(String.valueOf(c))) {
-        this.board.set(i, 5 - this.getGuessLeft(), ANSI_YELLOW + c + ANSI_RESET);
+        this.board.set(row, col, ANSI_YELLOW + c + ANSI_RESET);
       } else {
-        this.board.set(i, 5 - this.getGuessLeft(), c + "");
-      } // if/else
+        this.board.set(row, col, c + "");
+      }
     } // for
 
     return true;
   } // registerGuess(String)
+
+  /**
+   * Check if the game is over.
+   * 
+   * @return
+   */
+  public boolean isGameOver() {
+    return this.getGuessLeft() == 0;
+  } // isGameOver()
 
 } // class GameLogic

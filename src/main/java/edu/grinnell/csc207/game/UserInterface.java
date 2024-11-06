@@ -27,7 +27,7 @@ public class UserInterface {
       switch (choice) {
         case "1":
           // Play the game
-          playGame(pen);
+          playGame(pen, eyes);
           breakOutOfLoop = true;
           break;
         case "2":
@@ -91,10 +91,22 @@ public class UserInterface {
         """);
   } // printInstructions()
 
-  private static void playGame(PrintWriter pen) throws IOException {
+  private static void playGame(PrintWriter pen, BufferedReader eye) throws IOException {
     try (pen) {
       GameLogic game = new GameLogic();
+      String guess;
+      pen.println("The target word has 5 letters.");
       pen.print(game.toString());
+      while (!game.isGameOver()) {
+        pen.printf("You have %d guesses left.", game.getGuessLeft());
+        pen.print('\n');
+        pen.print("Enter your guess: ");
+        pen.flush();
+        if (game.registerGuess(guess = eye.readLine())) {
+          pen.print(game.toString());
+        } // if
+      } // while
+
     } // try
   } // playGame()
 }
