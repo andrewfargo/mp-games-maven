@@ -58,7 +58,7 @@ public class GameLogic {
    *
    * Should have method like getTargetWord() and checkValidEnglishWord()
    */
-  private Words targetWord;
+  private final Words targetWord;
 
   // +-------------+---------------------------------------------------
   // | Constructor |
@@ -88,6 +88,22 @@ public class GameLogic {
   /**
    * toString prints the board in format.
    */
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    String horizontalLine = "+--".repeat(GameLogic.DEFAULT_WIDTH) + "+\n";
+
+    for (int row = 0; row < GameLogic.DEFAULT_HEIGHT; row++) {
+      sb.append(horizontalLine);
+      for (int col = 0; col < GameLogic.DEFAULT_WIDTH; col++) {
+        sb.append("| ").append(board.get(row, col)).append(" ");
+      }
+      sb.append("|\n");
+    }
+    sb.append(horizontalLine);
+
+    return sb.toString();
+  } // toString()
 
   /**
    * Register a guess into the board.
