@@ -1,0 +1,5 @@
+apple
+hello
+world
+lambda
+arbitrarilylongstring

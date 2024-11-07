@@ -2,7 +2,7 @@ package edu.grinnell.csc207.util.game;
 
 import edu.grinnell.csc207.util.matrix.Matrix;
 import edu.grinnell.csc207.util.matrix.MatrixV0;
-import java.util.LinkedList;
+import java.io.IOException;
 
 /**
  * Core game logic for the game of Wordle.
@@ -14,6 +14,20 @@ public class GameLogic {
   // +-----------+---------------------------------------------------
   // | Constants |
   // +-----------+
+
+  /**
+   * Possible returns on word entry.
+   */
+  public enum GameState {
+    /** Continue accepting input. */
+    CONTINUE,
+    /** Word invalid, try again. */
+    REDO,
+    /** Word is target. */
+    WIN,
+    /** Ran out of guesses. */
+    LOSE
+  } // enum GameState
   
   /**
    * The default number of rows.
@@ -77,9 +91,11 @@ public class GameLogic {
   /**
    * Create a new game.
    */
-  public GameLogic(String wordlist, String checklist, String savefile, long seed, int guesses) {
+  public GameLogic(String wordlist, String checklist, String savefile, long seed, int guesses)
+  throws IOException {
     this.words = new Words(wordlist, checklist, seed);
     this.guessesAllowed = guesses;
+    reset();
   } // GameLogic()
 
   // +---------+---------------------------------------------------
@@ -89,11 +105,28 @@ public class GameLogic {
   /**
    * Reset and select a new word.
    */
-  private void reset() {
+  public final void reset() {
     this.guessesMade = 0;
     this.target = words.next();
     this.board = new MatrixV0<String>(this.target.length(), this.guessesAllowed, " ");
   } // reset()
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    String horizontalLine = "+----".repeat(this.target.length() - 1) + "+\n";
+
+    for (int row = 0; row < this.guessesAllowed; row++) {
+      sb.append(horizontalLine);
+      for (int col = 0; col < this.target.length(); col++) {
+        sb.append("| ").append(board.get(row, col)).append(" ");
+      }
+      sb.append("|\n");
+    }
+    sb.append(horizontalLine);
+
+    return sb.toString();
+  } // toString()
 
   /**
    * Register a guess into the board.
@@ -112,36 +145,41 @@ public class GameLogic {
     this.guessesMade++;
     for (int i = 0; i < guess.length(); i++) {
       char c = guess.charAt(i);
+
+      int row = guessesMade;
+      int col = i;
       if (target.charAt(i) == c) {
-        this.board.set(i, guessesMade, ANSI_GREEN + c + ANSI_RESET);
+        this.board.set(row, col, ANSI_GREEN + c + ANSI_RESET);
       } else if (target.indexOf(c) != -1) {
-        this.board.set(i, guessesMade, ANSI_YELLOW + c + ANSI_RESET);
+        this.board.set(row, col, ANSI_YELLOW + c + ANSI_RESET);
       } else {
-        this.board.set(i, guessesMade, c + "");
+        this.board.set(row, col, c + "");
       } // if/else
     } // for
 
     if (guess.equals(target)) {
-      return GameState.WIN;
       scores.add(guessesMade);
-    } else if (guessesMade == guessesAllowed) {
+      return GameState.WIN;
+    } else if (this.isGameOver()) {
       return GameState.LOSE;
     } else {
       return GameState.CONTINUE;
     } // if/else
   } // registerGuess(String)
+
+  /**
+   * Check if the game is over.
+   * 
+   * @return
+   */
+  public boolean isGameOver() {
+    return this.guessesMade == this.guessesAllowed;
+  } // isGameOver()
+
+  public int getGuessesLeft() {
+    return this.guessesAllowed - this.guessesMade;
+  } // getGuessesLeft()
+  
 } // class GameLogic
 
-/**
- * Possible returns on word entry.
- */
-public enum GameState {
-  /** Continue accepting input. */
-  CONTINUE,
-  /** Word invalid, try again. */
-  REDO,
-  /** Word is target. */
-  WIN,
-  /** Ran out of guesses. */
-  LOSE
-} // enum GameState
+

@@ -3,6 +3,8 @@ package edu.grinnell.csc207.util.game;
 import java.util.HashMap;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.function.Function;
 
 public class Scores {
   /** Default save path. */
@@ -32,19 +34,25 @@ public class Scores {
   /**
    * Save the current values to disk.
    */
-  public void save();
+  public void save() {
+
+  }
 
   /**
    * Load path into current values.
    */
-  private void load();
+  private void load() {
+
+  }
 
   /**
    * From the string formatted by toString, generate a map.
    * @param String A string of format specified by toString()
    * @return The map.
    */
-  private static Map<Integer, Integer> fromString(String data);
+  private static Map<Integer, Integer> fromString(String data) {
+    return null;
+  }
 
   /**
    * Represents the map as a human-readable and computer-readable string.
@@ -55,8 +63,8 @@ public class Scores {
       "" + e.getKey() + ": " + e.getValue() + "\n";
     
     return this.histogram.entrySet().stream()
-      .sorted(Map.Entry<Integer, Integer>.comparingbyKey())
-      .parallel().map(toFormat).reduce((s1, s2) -> s1.concat(s2));
+      .sorted(Map.Entry.comparingByKey())
+      .parallel().map(toFormat).reduce((s1, s2) -> s1.concat(s2)).get();
   } // toString()
 
   public void add(int score) {
