@@ -4,58 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Optional;
 
 import edu.grinnell.csc207.util.game.GameLogic;
 
 public class UserInterface {
   static GameLogic game;
 
-  /**
-   * The main method for the Wordle game.
-   */
-  public static void main(String[] args) throws IOException {
-    PrintWriter pen = new PrintWriter(System.out, true);
-    BufferedReader eyes = new BufferedReader(new InputStreamReader(System.in));
-
-    printInstructions(pen);
-    String choice;
-    boolean breakOutOfLoop = false;
-    game = new GameLogic("wordlist.txt", "checklist.txt", "savefile.txt", 0, 6);
-
-    while (!breakOutOfLoop) {
-      pen.print(" Type the number 1, 2, or 3 to select an option: ");
-      pen.flush();
-      choice = eyes.readLine();
-
-      switch (choice) {
-        case "1":
-          // Play the game
-          playGame(pen, eyes);
-          break;
-        case "2":
-          // See stats
-          pen.printf(game.scores.toString());
-          break;
-        case "3":
-          // Quit
-          pen.println("Thanks for playing WORDLE!");
-          breakOutOfLoop = true;
-          break;
-        default:
-          pen.printf("Unexpected command: '%s'. Please try again.\n\n", choice);
-          break;
-      } // switch
-    } // while
-
-    pen.close();
-    eyes.close();
-  } // main
-
-  /**
-   * Print the welcome message for the Wordle game.
-   */
-  private static void printInstructions(PrintWriter pen) {
-    pen.println("""
+  public static final String instructions = """
         +--------------------+
         | Welcome to WORDLE! |
         +--------------------+
@@ -81,13 +37,15 @@ public class UserInterface {
 
         Example:
 
-        +----+----+----+----+
+        +---+---+---+---+---+
         | H | \u001B[33mE\u001B[0m | \u001B[33mL\u001B[0m | \u001B[32mL\u001B[0m | O |
-        +----+----+----+----+
+        +---+---+---+---+---+
         \u001B[33mE\u001B[0m and \u001B[33mL\u001B[0m are in the word but in the wrong place.
         The second \u001B[32mL\u001B[0m is in the word and in the right place.
         The other letters H and O are not in the word.
+    """;
 
+  public static final String options = """
         +-----------------------------------------------+
         | These are the options to go from here:        |
         |                                               |
@@ -96,17 +54,57 @@ public class UserInterface {
         |  [3] Instructions                             |
         |  [4] Quit                                     |
         +-----------------------------------------------+
-        """);
-  } // printInstructions()
+    """;
+  
+  /**
+   * The main method for the Wordle game.
+   */
+  public static void main(String[] args) throws IOException {
+    PrintWriter pen = new PrintWriter(System.out, true);
+    BufferedReader eyes = new BufferedReader(new InputStreamReader(System.in));
 
+    pen.printf(UserInterface.instructions);
+    pen.printf(UserInterface.options);
+    String choice;
+    boolean shouldRun = true;
+    game = new GameLogic("wordlist.txt", "checklist.txt", "savefile.txt", Optional.empty(), 6);
+
+    while (shouldRun) {
+      pen.print(" Type the number 1, 2, or 3 to select an option: ");
+      pen.flush();
+      choice = eyes.readLine();
+
+      switch (choice) {
+        case "1":
+          // Play the game
+          playGame(pen, eyes);
+	  pen.printf(UserInterface.options);
+          break;
+        case "2":
+          // See stats
+          pen.printf(game.scores.toString());
+          break;
+        case "3":
+          // Quit
+          pen.println("Thanks for playing WORDLE!");
+          shouldRun = false;
+          break;
+        default:
+          pen.printf("Unexpected command: '%s'. Please try again.\n\n", choice);
+          break;
+      } // switch
+    } // while
+
+    pen.close();
+    eyes.close();
+  } // main
   private static void playGame(PrintWriter pen, BufferedReader eye) throws IOException {
     try (pen) {
       game.reset();
-      pen.println("The target word has 5 letters.");
 
       boolean shouldRun = true;
       while (shouldRun) {
-        pen.print(game.toString());
+        pen.print(game);
         pen.printf("\nYou have %d guesses left.", game.getGuessesLeft());
         pen.print('\n');
         pen.print("Enter your guess: ");

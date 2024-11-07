@@ -1,6 +1,7 @@
 package edu.grinnell.csc207.util.game;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import edu.grinnell.csc207.util.matrix.Matrix;
 import edu.grinnell.csc207.util.matrix.MatrixV0;
@@ -92,7 +93,8 @@ public class GameLogic {
   /**
    * Create a new game.
    */
-  public GameLogic(String wordlist, String checklist, String savefile, long seed, int guesses)
+  public GameLogic(String wordlist, String checklist, String savefile,
+		   Optional<Long> seed, int guesses)
       throws IOException {
     this.words = new Words(wordlist, checklist, seed);
     this.guessesAllowed = guesses;
@@ -115,7 +117,7 @@ public class GameLogic {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    String horizontalLine = "+----".repeat(this.target.length() - 1) + "+\n";
+    String horizontalLine = "+---".repeat(this.target.length() ) + "+\n";
 
     for (int row = 0; row < this.guessesAllowed; row++) {
       sb.append(horizontalLine);
