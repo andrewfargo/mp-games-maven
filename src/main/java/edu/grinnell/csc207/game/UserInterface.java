@@ -23,7 +23,7 @@ public class UserInterface {
     game = new GameLogic("wordlist.txt", "checklist.txt", "savefile.txt", 0, 6);
 
     while (!breakOutOfLoop) {
-      pen.print(" Type the number 1, 2, 3, or 4 to select an option: ");
+      pen.print(" Type the number 1, 2, or 3 to select an option: ");
       pen.flush();
       choice = eyes.readLine();
 
@@ -37,10 +37,6 @@ public class UserInterface {
           pen.printf(game.scores.toString());
           break;
         case "3":
-          // Print instructions
-          printInstructions(pen);
-          break;
-        case "4":
           // Quit
           pen.println("Thanks for playing WORDLE!");
           breakOutOfLoop = true;
@@ -86,11 +82,11 @@ public class UserInterface {
         Example:
 
         +----+----+----+----+
-        | h | \u001B[33me\u001B[0m | \u001B[33ml\u001B[0m | \u001B[32ml\u001B[0m | o |
+        | H | \u001B[33mE\u001B[0m | \u001B[33mL\u001B[0m | \u001B[32mL\u001B[0m | O |
         +----+----+----+----+
-        \u001B[33me\u001B[0m and \u001B[33ml\u001B[0m are in the word but in the wrong place.
-        \u001B[32ml\u001B[0m is in the word and in the right place.
-        The other letters are not in the word.
+        \u001B[33mE\u001B[0m and \u001B[33mL\u001B[0m are in the word but in the wrong place.
+        The second \u001B[32mL\u001B[0m is in the word and in the right place.
+        The other letters H and O are not in the word.
 
         +-----------------------------------------------+
         | These are the options to go from here:        |
@@ -111,7 +107,7 @@ public class UserInterface {
       boolean shouldRun = true;
       while (shouldRun) {
         pen.print(game.toString());
-        pen.printf("You have %d guesses left.", game.getGuessesLeft());
+        pen.printf("\nYou have %d guesses left.", game.getGuessesLeft());
         pen.print('\n');
         pen.print("Enter your guess: ");
         pen.flush();
