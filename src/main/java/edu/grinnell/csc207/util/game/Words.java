@@ -102,7 +102,7 @@ public class Words implements Iterator<String>, Predicate<String> {
   @Override
   public boolean test(String word) {
     try {
-      return Files.lines(this.checklist).parallel().anyMatch((e) -> word.equals(e));
+      return Files.lines(this.checklist).parallel().anyMatch((e) -> word.toLowerCase().equals(e));
     } catch (Exception e) {
       throw new RuntimeException("IO ERROR: " + this.checklist + " File no longer valid.");
     } // try/catch

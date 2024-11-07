@@ -1,8 +1,9 @@
 package edu.grinnell.csc207.util.game;
 
+import java.io.IOException;
+
 import edu.grinnell.csc207.util.matrix.Matrix;
 import edu.grinnell.csc207.util.matrix.MatrixV0;
-import java.io.IOException;
 
 /**
  * Core game logic for the game of Wordle.
@@ -107,7 +108,7 @@ public class GameLogic {
    */
   public final void reset() {
     this.guessesMade = 0;
-    this.target = words.next();
+    this.target = (words.next()).toUpperCase();
     this.board = new MatrixV0<String>(this.target.length(), this.guessesAllowed, " ");
   } // reset()
 
@@ -136,7 +137,7 @@ public class GameLogic {
    * @see edu.grinnell.csc207.util.game.GameState
    */
   public GameState registerGuess(String guess) {
-    guess = guess.toLowerCase();
+    guess = guess.toUpperCase();
 
     if (!words.test(guess) || guess.length() != target.length()) {
       return GameState.REDO;

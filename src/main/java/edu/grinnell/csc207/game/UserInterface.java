@@ -83,6 +83,15 @@ public class UserInterface {
         * If the letter is not contained in the answer, it will be
         presented as WHITE
 
+        Example:
+
+        +----+----+----+----+
+        | h | \u001B[33me\u001B[0m | \u001B[33ml\u001B[0m | \u001B[32ml\u001B[0m | o |
+        +----+----+----+----+
+        \u001B[33me\u001B[0m and \u001B[33ml\u001B[0m are in the word but in the wrong place.
+        \u001B[32ml\u001B[0m is in the word and in the right place.
+        The other letters are not in the word.
+
         +-----------------------------------------------+
         | These are the options to go from here:        |
         |                                               |
