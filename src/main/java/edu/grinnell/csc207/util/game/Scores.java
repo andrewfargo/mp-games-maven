@@ -59,5 +59,7 @@ public class Scores {
       .parallel().map(toFormat).reduce((s1, s2) -> s1.concat(s2));
   } // toString()
 
-  public void add(int score);
+  public void add(int score) {
+    
+  } // add(int)
 } // class Scores
