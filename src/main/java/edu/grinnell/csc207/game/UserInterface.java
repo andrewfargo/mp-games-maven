@@ -9,7 +9,7 @@ import edu.grinnell.csc207.util.game.GameLogic;
 
 public class UserInterface {
   static GameLogic game;
-  
+
   /**
    * The main method for the Wordle game.
    */
@@ -21,7 +21,7 @@ public class UserInterface {
     String choice;
     boolean breakOutOfLoop = false;
     game = new GameLogic("wordlist.txt", "checklist.txt", "savefile.txt", 0, 6);
-    
+
     while (!breakOutOfLoop) {
       pen.print(" Type the number 1, 2, 3, or 4 to select an option: ");
       pen.flush();
@@ -34,7 +34,7 @@ public class UserInterface {
           break;
         case "2":
           // See stats
-	  pen.printf(game.scores.toString());
+          pen.printf(game.scores.toString());
           break;
         case "3":
           // Print instructions
@@ -97,34 +97,37 @@ public class UserInterface {
   private static void playGame(PrintWriter pen, BufferedReader eye) throws IOException {
     try (pen) {
       game.reset();
-      String guess;
       pen.println("The target word has 5 letters.");
-      pen.print(game.toString());
+
       boolean shouldRun = true;
       while (shouldRun) {
+        pen.print(game.toString());
         pen.printf("You have %d guesses left.", game.getGuessesLeft());
         pen.print('\n');
         pen.print("Enter your guess: ");
         pen.flush();
 
-	switch (game.registerGuess(eye.readLine())) {
-	case CONTINUE:
-	  break;
-	case REDO:
-	  pen.printf("Invalid input.\n");
-	  break;
-	case WIN:
-	  pen.printf("Congrats!\n");
-	  pen.printf(game.scores.toString());
-	  shouldRun = false;
-	  break;
-	case LOSE:
-	  pen.printf("You lose!\n");
-	  shouldRun = false;
-	  break;
-	} // switch/case
+        switch (game.registerGuess(eye.readLine())) {
+          case CONTINUE:
+            break;
+          case REDO:
+            pen.printf("Invalid input.\n");
+            break;
+          case WIN:
+            pen.print(game.toString());
+            pen.printf("Congrats!\n");
+            // pen.printf(game.scores.toString());
+            shouldRun = false;
+            break;
+          case LOSE:
+            pen.print(game.toString());
+            pen.printf("You lose!\n");
+            shouldRun = false;
+            break;
+        } // switch/case
       } // while
-
+      pen.close();
+      eye.close();
     } // try
   } // playGame()
 }

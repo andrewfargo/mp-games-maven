@@ -28,7 +28,7 @@ public class GameLogic {
     /** Ran out of guesses. */
     LOSE
   } // enum GameState
-  
+
   /**
    * The default number of rows.
    */
@@ -67,7 +67,7 @@ public class GameLogic {
    * The number of guesses the player is allowed.
    */
   private int guessesAllowed;
-  
+
   /**
    * The number of guesses the player has made.
    */
@@ -92,7 +92,7 @@ public class GameLogic {
    * Create a new game.
    */
   public GameLogic(String wordlist, String checklist, String savefile, long seed, int guesses)
-  throws IOException {
+      throws IOException {
     this.words = new Words(wordlist, checklist, seed);
     this.guessesAllowed = guesses;
     reset();
@@ -141,8 +141,7 @@ public class GameLogic {
     if (!words.test(guess) || guess.length() != target.length()) {
       return GameState.REDO;
     } // if
-    
-    this.guessesMade++;
+
     for (int i = 0; i < guess.length(); i++) {
       char c = guess.charAt(i);
 
@@ -157,8 +156,10 @@ public class GameLogic {
       } // if/else
     } // for
 
+    this.guessesMade++;
+
     if (guess.equals(target)) {
-      scores.add(guessesMade);
+      // scores.add(guessesMade);
       return GameState.WIN;
     } else if (this.isGameOver()) {
       return GameState.LOSE;
@@ -179,7 +180,7 @@ public class GameLogic {
   public int getGuessesLeft() {
     return this.guessesAllowed - this.guessesMade;
   } // getGuessesLeft()
-  
+
 } // class GameLogic
 
 
