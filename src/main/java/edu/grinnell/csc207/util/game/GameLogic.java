@@ -2,6 +2,7 @@ package edu.grinnell.csc207.util.game;
 
 import edu.grinnell.csc207.util.matrix.Matrix;
 import edu.grinnell.csc207.util.matrix.MatrixV0;
+import java.util.LinkedList;
 
 /**
  * Core game logic for the game of Wordle.
@@ -63,6 +64,11 @@ public class GameLogic {
    */
   private String target;
 
+  /**
+   * Keeps track of current wins.
+   */
+  public Scores scores;
+
 
   // +-------------+---------------------------------------------------
   // | Constructor |
@@ -117,6 +123,7 @@ public class GameLogic {
 
     if (guess.equals(target)) {
       return GameState.WIN;
+      scores.add(guessesMade);
     } else if (guessesMade == guessesAllowed) {
       return GameState.LOSE;
     } else {
