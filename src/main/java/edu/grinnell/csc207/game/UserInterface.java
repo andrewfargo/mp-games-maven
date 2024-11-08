@@ -9,10 +9,24 @@ import java.util.Optional;
 import edu.grinnell.csc207.util.game.GameLogic;
 import edu.grinnell.csc207.util.game.GameOptions;
 
+/**
+ * Handles all input and output from the user.
+ * @author Khanh Do
+ * @author Andrew Fargo
+ */
 public class UserInterface {
+  /**
+   * The game logic reference.
+   */
   static GameLogic game;
+  /**
+   * Reference to the options the game should be using.
+   */
   static GameOptions opts;
 
+  /**
+   * Instructions for first time players.
+   */
   public static final String INSTRUCTIONS = """
         +--------------------+
         | Welcome to WORDLE! |
@@ -21,7 +35,7 @@ public class UserInterface {
         Inspired by the famous NYT game, Wordle, this is a game
         where you have to guess a five-letter word.
 
-    By default, your game board is a 5x6 grid.
+        By default, your game board is a 5x6 grid.
 
         You have total of 6 guesses to guess the target word.
 
@@ -45,8 +59,11 @@ public class UserInterface {
         \u001B[33mE\u001B[0m and \u001B[33mL\u001B[0m are in the word but in the wrong place.
         The second \u001B[32mL\u001B[0m is in the word and in the right place.
         The other letters H and O are not in the word.
-    """;
+      """;
 
+  /**
+   * Options available to players.
+   */
   public static final String OPTIONS = """
         +-----------------------------------------------+
         | These are the options to go from here:        |
@@ -57,10 +74,12 @@ public class UserInterface {
         |  [4] Quit                                     |
         |  [5] Configure...                             |
         +-----------------------------------------------+
-    """;
-  
+      """;
+
   /**
    * The main method for the Wordle game.
+   * @param args Ignored
+   * @throws IOException If files used are invalid.
    */
   public static void main(String[] args) throws IOException {
     PrintWriter pen = new PrintWriter(System.out, true);
@@ -82,84 +101,90 @@ public class UserInterface {
       choice = eyes.readLine();
 
       switch (choice) {
-      case "1":
-	// Play the game
-	playGame(pen, eyes);
-      case "2":
-	// See stats
-	pen.println("Scores (Guesses, Frequency):");
-	pen.printf(game.getScores().toString());
-	break;
-      case "3":
-	// Instructions
-	pen.print(UserInterface.INSTRUCTIONS);
-	break;
-      case "4":
-	// Quit
-	game.getScores().save();
-	pen.println("Thanks for playing WORDLE!");
-	shouldRun = false;
-	break;
-      case "5":
-	game.getScores().save();
-	try {
-	  GameOptions builder = new GameOptions();
-	  pen.printf("Enter wordlist file (or empty if unchanged): ");
-	  builder.setWordlist(eyes.readLine());
-	  pen.printf("Enter checklist file (or empty if unchanged): ");
-	  builder.setChecklist(eyes.readLine());
-	  pen.printf("Enter save file (or empty if unchanged): ");
-	  builder.setSavefile(eyes.readLine());
-	  pen.printf("Enter seed (or empty if random; only scores random): ");
-	  String seed = eyes.readLine();
-	  builder.setSeed(seed.isEmpty() ? Optional.empty()
-			  : Optional.of(Long.valueOf(seed)));
-	  pen.printf("Enter guesses allowed (or empty if unchanged): ");
-	  String guesses = eyes.readLine();
-	  if (!guesses.isEmpty()) {
-	    builder.setGuesses(Integer.valueOf(guesses));
-	  }
-	  UserInterface.opts = builder;
-	  game = new GameLogic(UserInterface.opts);	
-	} catch (Exception e) {
-	  pen.println(e.getMessage());
-	  break;
-	} // try/catch
-	break;
-      default:
-	pen.printf("Unexpected command: '%s'. Please try again.\n\n", choice);
-	break;
+        case "1":
+          // Play the game
+          playGame(pen, eyes);
+        case "2":
+          // See stats
+          pen.println("Scores (Guesses, Frequency):");
+          pen.printf(game.getScores().toString());
+          break;
+        case "3":
+            // Instructions
+          pen.print(UserInterface.INSTRUCTIONS);
+          break;
+        case "4":
+            // Quit
+          game.getScores().save();
+          pen.println("Thanks for playing WORDLE!");
+          shouldRun = false;
+          break;
+        case "5":
+          game.getScores().save();
+          try {
+            GameOptions builder = new GameOptions();
+            pen.printf("Enter wordlist file (or empty if unchanged): ");
+            builder.setWordlist(eyes.readLine());
+            pen.printf("Enter checklist file (or empty if unchanged): ");
+            builder.setChecklist(eyes.readLine());
+            pen.printf("Enter save file (or empty if unchanged): ");
+            builder.setSavefile(eyes.readLine());
+            pen.printf("Enter seed (or empty if random; only scores random): ");
+            String seed = eyes.readLine();
+            builder.setSeed(seed.isEmpty() ? Optional.empty()
+                            : Optional.of(Long.valueOf(seed)));
+            pen.printf("Enter guesses allowed (or empty if unchanged): ");
+            String guesses = eyes.readLine();
+            if (!guesses.isEmpty()) {
+              builder.setGuesses(Integer.valueOf(guesses));
+            } // if
+            UserInterface.opts = builder;
+            game = new GameLogic(UserInterface.opts);
+          } catch (Exception e) {
+            pen.println(e.getMessage());
+            break;
+          } // try/catch
+          break;
+        default:
+          pen.printf("Unexpected command: '%s'. Please try again.\n\n", choice);
+          break;
       } // switch
     } // while
 
     pen.close();
     eyes.close();
   } // main
+  /**
+   * One iteration of the game.
+   * @param pen Output
+   * @param eye Input
+   * @throws IOException if configured files are invalid.
+   */
   private static void playGame(PrintWriter pen, BufferedReader eye) throws IOException {
     game.reset();
 
     boolean shouldRun = true;
     while (shouldRun) {
       pen.printf("%s\nYou have %d guesses left.\n Enter your guess: ",
-		 game, game.getGuessesLeft());
-      
+                 game, game.getGuessesLeft());
+
       switch (game.registerGuess(eye.readLine())) {
-      case CONTINUE:
-	break;
-      case REDO:
-	pen.printf("Invalid input.\n");
-	break;
-      case WIN:
-	pen.print(game.toString());
-	pen.printf("Congrats!\n");
-	shouldRun = false;
-	break;
-      case LOSE:
-	pen.print(game.toString());
-	pen.printf("You lose!\n");
-	shouldRun = false;
-	break;
+        case REDO:
+          pen.printf("Invalid input.\n");
+          break;
+        case WIN:
+          pen.print(game.toString());
+          pen.printf("Congrats!\n");
+          shouldRun = false;
+          break;
+        case LOSE:
+          pen.print(game.toString());
+          pen.printf("You lose!\n");
+          shouldRun = false;
+          break;
+        default:
+          break;
       } // switch/case
     } // while
   } // playGame()
-} // class UserInterface 
+} // class UserInterface

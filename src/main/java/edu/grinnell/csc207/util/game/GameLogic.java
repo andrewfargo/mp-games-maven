@@ -64,6 +64,9 @@ public class GameLogic {
    */
   private Words words;
 
+  /**
+   * Handles options passed to the game logic.
+   */
   private GameOptions opts;
 
   /**
@@ -87,6 +90,7 @@ public class GameLogic {
 
   /**
    * Create a new game.
+   * @param options The options used.
    */
   public GameLogic(GameOptions options)
       throws IOException {
@@ -109,10 +113,13 @@ public class GameLogic {
     this.board = new MatrixV0<String>(this.target.length(), this.opts.getGuesses(), " ");
   } // reset()
 
+  /**
+   * Represents the game board as a string.
+   */
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    String horizontalLine = "+---".repeat(this.target.length() ) + "+\n";
+    String horizontalLine = "+---".repeat(this.target.length()) + "+\n";
 
     for (int row = 0; row < this.opts.getGuesses(); row++) {
       sb.append(horizontalLine);
@@ -126,6 +133,11 @@ public class GameLogic {
     return sb.toString();
   } // toString()
 
+  /**
+   * Formats a single guess, coloring the letters appropriately.
+   * @param guess The guessed word
+   * @return A string of the guessed words characters outfixed with ANSI codes
+   */
   private String[] formatGuess(String guess) {
     char[] guessArray = guess.toUpperCase().toCharArray();
     char[] targetArray = this.target.toCharArray();
@@ -136,17 +148,17 @@ public class GameLogic {
     //
     // E.g. if the target is `plead` and the guess is `apple`
     // Only one `p` lights up.
-    
+
     for (int i = 0; i < targetArray.length; i++) {
       if (targetArray[i] == guessArray[i]) {
         formatArray[i] = ANSI_GREEN + guessArray[i] + ANSI_RESET;
-	guessArray[i] = '#';
+        guessArray[i] =  '#';
       } // if
     } // for
     for (int i = 0; i < targetArray.length; i++) {
       if (target.indexOf(guessArray[i]) != -1) {
         formatArray[i] = ANSI_YELLOW + guessArray[i] + ANSI_RESET;
-	guessArray[i] = '#';
+        guessArray[i] = '#';
       } // if
     } // for
     for (int i = 0; i < targetArray.length; i++) {
@@ -156,7 +168,7 @@ public class GameLogic {
     } // for
     return formatArray;
   } // formatGuess(String)
-  
+
   /**
    * Register a guess into the board.
    *
@@ -173,12 +185,12 @@ public class GameLogic {
     for (int i = 0; i < guess.length(); i++) {
       board.set(this.guessesMade, i, formatArray[i]);
     } // for
-    
+
     this.guessesMade++;
 
     if (guess.toUpperCase().equals(target)) {
       if (this.opts.getValid()) {
-	scores.add(this.guessesMade);
+        scores.add(this.guessesMade);
       } // if
       return GameState.WIN;
     } else if (this.isGameOver()) {
@@ -190,17 +202,25 @@ public class GameLogic {
 
   /**
    * Check if the game is over.
-   * 
-   * @return
+   *
+   * @return Whether or not the game should finish.
    */
   public boolean isGameOver() {
     return this.guessesMade == this.opts.getGuesses();
   } // isGameOver()
 
+  /**
+   * Calculates and returns the guesses left before game over.
+   * @return The guesses left.
+   */
   public int getGuessesLeft() {
     return this.opts.getGuesses() - this.guessesMade;
   } // getGuessesLeft()
 
+  /**
+   * Scores getter.
+   * @return The scores object
+   */
   public Scores getScores() {
     return this.scores;
   } // getScores()

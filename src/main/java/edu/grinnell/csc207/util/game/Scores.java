@@ -9,6 +9,11 @@ import java.util.function.Function;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Represents a score-frequency tracking system.
+ * Handles saving and loading of these scores.
+ * @author Andrew Fargo
+ */
 public class Scores {
   /** The storage data. Score to frequency. */
   private Map<Integer, Integer> histogram;
@@ -35,7 +40,7 @@ public class Scores {
    */
   public void save() throws IOException {
     Files.writeString(this.path, this.toString(), StandardOpenOption.WRITE,
-		      StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                      StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
   } // save()
 
   /**
@@ -46,17 +51,17 @@ public class Scores {
     Scanner sc = new Scanner(this.path);
     while (sc.hasNextInt()) {
       try {
-	int guesses = sc.nextInt();
-	int freq = sc.nextInt();
-	this.histogram.put(guesses, freq);
+        int guesses = sc.nextInt();
+        int freq = sc.nextInt();
+        this.histogram.put(guesses, freq);
       } catch (Exception e) {
-	sc.close();
-	throw new IOException("Save file corrupt when loading: " + e.getMessage());
+        sc.close();
+        throw new IOException("Save file corrupt when loading: " + e.getMessage());
       } // try/catch
     } // while
     sc.close();
   } // load()
-  
+
   /**
    * Represents the map as a human-readable and computer-readable string.
    * @return The String representation.
@@ -64,7 +69,7 @@ public class Scores {
   @Override
   public String toString() {
     Function<Map.Entry<Integer, Integer>, String> toFormat = (e) ->
-      "" + e.getKey() + "\t" + e.getValue() + "\n";
+        "" + e.getKey() + "\t" + e.getValue() + "\n";
     // This series of stream operations makes the formatting significantly
     // easier compared to imperative methods.
     return this.histogram.entrySet().stream()
@@ -72,6 +77,10 @@ public class Scores {
       .parallel().map(toFormat).reduce("", (s1, s2) -> s1.concat(s2));
   } // toString()
 
+  /**
+   * Adds a score to the histogram.
+   * @param score The amount of guesses it took to win.
+   */
   public void add(int score) {
     this.histogram.compute(score, (k, v) -> (v == null) ? 1 : v + 1);
   } // add(int)
