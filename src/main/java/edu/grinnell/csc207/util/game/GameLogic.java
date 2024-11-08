@@ -222,6 +222,15 @@ public class GameLogic {
   public Scores getScores() {
     return this.scores;
   } // getScores()
+
+  /**
+   * Target getter.
+   *
+   * @return The target word.
+   */
+  public String getTarget() {
+    return this.target;
+  } // getTarget()
 } // class GameLogic
 
 

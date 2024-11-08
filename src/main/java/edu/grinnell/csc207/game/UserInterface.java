@@ -182,6 +182,7 @@ public class UserInterface {
           break;
         case LOSE:
           pen.print(game.toString());
+          pen.printf("The correct answer is: %s\n", game.getTarget());
           pen.printf("You lose!\n");
           shouldRun = false;
           break;
