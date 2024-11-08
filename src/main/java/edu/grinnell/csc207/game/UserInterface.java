@@ -65,12 +65,12 @@ public class UserInterface {
   public static void main(String[] args) throws IOException {
     PrintWriter pen = new PrintWriter(System.out, true);
     BufferedReader eyes = new BufferedReader(new InputStreamReader(System.in));
-    String hint = "";
-    
+
     UserInterface.opts = new GameOptions();
-    
+
     pen.printf(UserInterface.INSTRUCTIONS);
-    pen.printf(hint);
+    pen.println("Using seed: " + UserInterface.opts.getSeed());
+
     String choice;
     boolean shouldRun = true;
     game = new GameLogic(UserInterface.opts);
