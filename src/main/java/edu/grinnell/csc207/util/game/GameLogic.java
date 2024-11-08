@@ -1,7 +1,6 @@
 package edu.grinnell.csc207.util.game;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import edu.grinnell.csc207.util.matrix.Matrix;
 import edu.grinnell.csc207.util.matrix.MatrixV0;
@@ -65,10 +64,7 @@ public class GameLogic {
    */
   private Words words;
 
-  /**
-   * The number of guesses the player is allowed.
-   */
-  private int guessesAllowed;
+  private GameOptions opts;
 
   /**
    * The number of guesses the player has made.
@@ -83,8 +79,7 @@ public class GameLogic {
   /**
    * Keeps track of current wins.
    */
-  public Scores scores;
-
+  private Scores scores;
 
   // +-------------+---------------------------------------------------
   // | Constructor |
@@ -93,11 +88,11 @@ public class GameLogic {
   /**
    * Create a new game.
    */
-  public GameLogic(String wordlist, String checklist, String savefile,
-		   Optional<Long> seed, int guesses)
+  public GameLogic(GameOptions options)
       throws IOException {
-    this.words = new Words(wordlist, checklist, seed);
-    this.guessesAllowed = guesses;
+    this.words = new Words(options);
+    this.opts = options;
+    this.scores = new Scores(this.opts.getSavefile());
     reset();
   } // GameLogic()
 
@@ -111,7 +106,7 @@ public class GameLogic {
   public final void reset() {
     this.guessesMade = 0;
     this.target = (words.next()).toUpperCase();
-    this.board = new MatrixV0<String>(this.target.length(), this.guessesAllowed, " ");
+    this.board = new MatrixV0<String>(this.target.length(), this.opts.getGuesses(), " ");
   } // reset()
 
   @Override
@@ -119,18 +114,49 @@ public class GameLogic {
     StringBuilder sb = new StringBuilder();
     String horizontalLine = "+---".repeat(this.target.length() ) + "+\n";
 
-    for (int row = 0; row < this.guessesAllowed; row++) {
+    for (int row = 0; row < this.opts.getGuesses(); row++) {
       sb.append(horizontalLine);
       for (int col = 0; col < this.target.length(); col++) {
         sb.append("| ").append(board.get(row, col)).append(" ");
-      }
+      } // for
       sb.append("|\n");
-    }
+    } // for
     sb.append(horizontalLine);
 
     return sb.toString();
   } // toString()
 
+  private String[] formatGuess(String guess) {
+    char[] guessArray = guess.toUpperCase().toCharArray();
+    char[] targetArray = this.target.toCharArray();
+    String[] formatArray = new String[target.length()];
+    // Perform three passes, first checking for exact matches,
+    // then checking for slight matches, then filling the rest.
+    // Blocks out each letter as it is consumed, avoiding duplicate matches.
+    //
+    // E.g. if the target is `plead` and the guess is `apple`
+    // Only one `p` lights up.
+    
+    for (int i = 0; i < targetArray.length; i++) {
+      if (targetArray[i] == guessArray[i]) {
+        formatArray[i] = ANSI_GREEN + guessArray[i] + ANSI_RESET;
+	guessArray[i] = '#';
+      } // if
+    } // for
+    for (int i = 0; i < targetArray.length; i++) {
+      if (target.indexOf(guessArray[i]) != -1) {
+        formatArray[i] = ANSI_YELLOW + guessArray[i] + ANSI_RESET;
+	guessArray[i] = '#';
+      } // if
+    } // for
+    for (int i = 0; i < targetArray.length; i++) {
+      if (guessArray[i] != '#') {
+        formatArray[i] = String.valueOf(guessArray[i]);
+      } // if/else
+    } // for
+    return formatArray;
+  } // formatGuess(String)
+  
   /**
    * Register a guess into the board.
    *
@@ -139,30 +165,21 @@ public class GameLogic {
    * @see edu.grinnell.csc207.util.game.GameState
    */
   public GameState registerGuess(String guess) {
-    guess = guess.toUpperCase();
-
     if (!words.test(guess) || guess.length() != target.length()) {
       return GameState.REDO;
     } // if
 
+    String[] formatArray = formatGuess(guess);
     for (int i = 0; i < guess.length(); i++) {
-      char c = guess.charAt(i);
-
-      int row = guessesMade;
-      int col = i;
-      if (target.charAt(i) == c) {
-        this.board.set(row, col, ANSI_GREEN + c + ANSI_RESET);
-      } else if (target.indexOf(c) != -1) {
-        this.board.set(row, col, ANSI_YELLOW + c + ANSI_RESET);
-      } else {
-        this.board.set(row, col, c + "");
-      } // if/else
+      board.set(this.guessesMade, i, formatArray[i]);
     } // for
-
+    
     this.guessesMade++;
 
-    if (guess.equals(target)) {
-      // scores.add(guessesMade);
+    if (guess.toUpperCase().equals(target)) {
+      if (this.opts.getValid()) {
+	scores.add(this.guessesMade);
+      } // if
       return GameState.WIN;
     } else if (this.isGameOver()) {
       return GameState.LOSE;
@@ -177,13 +194,16 @@ public class GameLogic {
    * @return
    */
   public boolean isGameOver() {
-    return this.guessesMade == this.guessesAllowed;
+    return this.guessesMade == this.opts.getGuesses();
   } // isGameOver()
 
   public int getGuessesLeft() {
-    return this.guessesAllowed - this.guessesMade;
+    return this.opts.getGuesses() - this.guessesMade;
   } // getGuessesLeft()
 
+  public Scores getScores() {
+    return this.scores;
+  } // getScores()
 } // class GameLogic
 
 

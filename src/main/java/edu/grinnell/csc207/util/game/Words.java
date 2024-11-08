@@ -15,69 +15,36 @@ import java.util.Optional;
  * @author Andrew Fargo
  */
 public class Words implements Iterator<String>, Predicate<String> {
-  /**
-   * The list of words the game will choose from. Must be a subset of wordlist.
-   */
-  private Path wordlist;
-
-  /**
-   * The list of words the game considers valid. Must be a superset of wordlist.
-   */
-  private Path checklist;
-
   /** How many words exist in the wordlist. */
   private int length;
 
   /** The random number generator. */
   private Random rng;
 
-  /** The seed being used. */
-  private long seed;
-
-  /**
-   * Initializes Words with just a wordlist. Assumes checklist is wordlist.
-   * 
-   * @param wordlistPath The path string to the wordlist.
-   * @param rngOrNull A random object, or null to create a new seed.
-   * @throws IOException if wordlistPath is not a readable file.
-   */
-  public Words(String wordlistPath, Optional<Long> seedOrNone) throws IOException {
-    this(wordlistPath, wordlistPath, seedOrNone);
-  } // Words(String)
+  /** The game options. */
+  private GameOptions opts;
 
   /**
    * Initializes Words with a wordlist and a checklist.
    * 
-   * @param wordlistPath The path string to the wordlist file.
-   * @param checklistPath The path string to the checklist file.
-   * @param seedOrNone A seed, or empty if to generate a new seed.
+   * @param options Game options.
    * @throws IOException if wordlistPath or checklistPath are not readable files.
    */
-  public Words(String wordlistPath, String checklistPath, Optional<Long> seedOrNone) throws IOException {
+  public Words(GameOptions options) throws IOException {
     // Initialize the paths
     // ====================
-    this.wordlist = Path.of(wordlistPath);
-    this.checklist = Path.of(checklistPath);
+    this.opts = options;
+    this.length = (int) Files.lines(this.opts.getWordlist())
+      .limit(Integer.MAX_VALUE).parallel().count();
 
-    if (!Files.isReadable(this.wordlist)) {
-      throw new IOException("Wordlist not readable.");
-    } // if
-    if (!Files.isReadable(this.wordlist)) {
-      throw new IOException("Checklist not readable.");
-    } // if
-
-    this.length = (int) Files.lines(this.wordlist).limit(Integer.MAX_VALUE).parallel().count();
-
-    this.rng = new Random();
-    this.seed = seedOrNone.isPresent() ? seedOrNone.get() : rng.nextLong();
-    this.rng.setSeed(this.seed);
+    this.rng = new Random(this.opts.getSeed());
   } // Words(String, String)
 
   /**
    * Validates that the file is still readable.
    */
   public boolean hasNext() {
-    return Files.isReadable(this.wordlist);
+    return Files.isReadable(this.opts.getWordlist());
   } // hasNext()
 
   /**
@@ -90,10 +57,11 @@ public class Words implements Iterator<String>, Predicate<String> {
   public String next() {
     int index = rng.nextInt(this.length);
     try {
-      return Files.lines(this.wordlist).skip(index).findFirst().get();
+      return Files.lines(this.opts.getWordlist()).skip(index)
+	.findFirst().get().toUpperCase();
     } catch (IOException e) {
       throw new RuntimeException("Unrecoverable IO ERROR: "
-				 + this.wordlist
+				 + this.opts.getWordlist()
 				 + " File no longer valid: "
 				 + e.getMessage());
     } // try/catch
@@ -109,20 +77,14 @@ public class Words implements Iterator<String>, Predicate<String> {
   @Override
   public boolean test(String word) {
     try {
-      return Files.lines(this.checklist).parallel().anyMatch((e) -> word.toLowerCase().equals(e));
+      String lower = word.toLowerCase();
+      return Files.lines(this.opts.getChecklist()).parallel()
+	.anyMatch((e) -> lower.equals(e));
     } catch (Exception e) {
       throw new RuntimeException("Unrecoverable IO ERROR: "
-				 + this.checklist
+				 + this.opts.getChecklist()
 				 + " File no longer valid: "
 				 + e.getMessage());
     } // try/catch
   } // pred(String)
-
-  /**
-   * Get the current seed used.
-   * @return The current seed.
-   */
-  public long getSeed() {
-    return this.seed;
-  } // getSeed
 } // class Words

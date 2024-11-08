@@ -10,7 +10,17 @@ A mini-project for Grinnell's CSC-207.
 
 ## Acknowledgements:
 
+Wordle is a game initially hosted on the website <https://powerlanguage.co.uk> which
+is now owned and hosted by the New York Times: <https://www.nytimes.com/games/wordle/index.html>.
+
 Implementation of Matrices comes from Khanh's Mini Project 6 submission, you may view the code at <https://github.com/khanhdo05/mp-matrices-maven>.
+
+The wordlist consists of the first 430 words of Donald Knuth's Stanford GraphBase file sgb-words.txt; the checklist is all 5757. These were introduced as supplements to Donald Knuth's *The Art of Computer Programming*, Volume 4: Combinatorial Algorithms.
+You may find these words, and other Stanford GraphBase items, here: <https://www-cs-faculty.stanford.edu/~knuth/sgb.html>
+
+*A note on the words:* As the words go further into the file (thus rarer), contain explatives.
+While I don't agree with the choice of including explative words in an educational resource, 
+I hope that since it is the unabridged version of Donald Knuth's list, it is acceptable.
 
 ## Source:
 
@@ -69,12 +79,13 @@ When you run the game, you will be presented with the following options:
 2. See Stats
 3. Instructions
 4. Quit
+5. Configure
 
 To select an option, type the corresponding number and press Enter.
 
 ## Playing the Game
 
-- You have 6 attempts to guess the 5-letter target word.
+- By default you have 6 attempts to guess the 5-letter target word.
 - After each guess, you will receive feedback:
 
   - **GREEN**: The letter is in the correct position.

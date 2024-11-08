@@ -23,7 +23,7 @@ public class Scores {
   public Scores(Path saveFile) throws IOException {
     this.histogram = new HashMap<Integer, Integer>();
     this.path = saveFile;
-    if (Files.exists(saveFile)) {
+    if (Files.isReadable(saveFile)) {
       this.load();
     } else {
       this.save(); // Necessarily empty, creates
@@ -64,8 +64,9 @@ public class Scores {
   @Override
   public String toString() {
     Function<Map.Entry<Integer, Integer>, String> toFormat = (e) ->
-      "" + e.getKey() + ": " + e.getValue() + "\n";
-    
+      "" + e.getKey() + "\t" + e.getValue() + "\n";
+    // This series of stream operations makes the formatting significantly
+    // easier compared to imperative methods.
     return this.histogram.entrySet().stream()
       .sorted(Map.Entry.comparingByKey())
       .parallel().map(toFormat).reduce("", (s1, s2) -> s1.concat(s2));
