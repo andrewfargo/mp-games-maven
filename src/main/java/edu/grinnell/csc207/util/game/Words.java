@@ -14,13 +14,13 @@ import java.util.function.Predicate;
  */
 public class Words implements Iterator<String>, Predicate<String> {
   /** How many words exist in the wordlist. */
-  private int length;
+  private final int length;
 
   /** The random number generator. */
-  private Random rng;
+  private final Random rng;
 
   /** The game options. */
-  private GameOptions opts;
+  private final GameOptions opts;
 
   /**
    * Initializes Words with a wordlist and a checklist.
@@ -32,16 +32,18 @@ public class Words implements Iterator<String>, Predicate<String> {
     // Initialize the paths
     // ====================
     this.opts = options;
-    this.length = (int) Files.lines(this.opts.getWordlist())
-      .limit(Integer.MAX_VALUE).parallel().count();
+    this.length =
+        (int) Files.lines(this.opts.getWordlist()).limit(Integer.MAX_VALUE).parallel().count();
 
     this.rng = new Random(this.opts.getSeed());
   } // Words(String, String)
 
   /**
    * Validates that the file is still readable.
+   *
    * @return true if the file is still readable.
    */
+  @Override
   public boolean hasNext() {
     return Files.isReadable(this.opts.getWordlist());
   } // hasNext()
@@ -56,13 +58,10 @@ public class Words implements Iterator<String>, Predicate<String> {
   public String next() {
     int index = rng.nextInt(this.length);
     try {
-      return Files.lines(this.opts.getWordlist()).skip(index)
-      .findFirst().get().toUpperCase();
+      return Files.lines(this.opts.getWordlist()).skip(index).findFirst().get().toUpperCase();
     } catch (IOException e) {
-      throw new RuntimeException("Unrecoverable IO ERROR: "
-                                 + this.opts.getWordlist()
-                                 + " File no longer valid: "
-                                 + e.getMessage());
+      throw new RuntimeException("Unrecoverable IO ERROR: " + this.opts.getWordlist()
+          + " File no longer valid: " + e.getMessage());
     } // try/catch
   } // next()
 
@@ -77,13 +76,10 @@ public class Words implements Iterator<String>, Predicate<String> {
   public boolean test(String word) {
     try {
       String lower = word.toLowerCase();
-      return Files.lines(this.opts.getChecklist()).parallel()
-            .anyMatch((e) -> lower.equals(e));
-    } catch (Exception e) {
-      throw new RuntimeException("Unrecoverable IO ERROR: "
-                                 + this.opts.getChecklist()
-                                 + " File no longer valid: "
-                                 + e.getMessage());
+      return Files.lines(this.opts.getChecklist()).parallel().anyMatch((e) -> lower.equals(e));
+    } catch (IOException e) {
+      throw new RuntimeException("Unrecoverable IO ERROR: " + this.opts.getChecklist()
+          + " File no longer valid: " + e.getMessage());
     } // try/catch
   } // pred(String)
 } // class Words

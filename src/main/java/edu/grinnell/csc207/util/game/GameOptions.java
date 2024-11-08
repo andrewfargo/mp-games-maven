@@ -1,13 +1,14 @@
 package edu.grinnell.csc207.util.game;
 
-import java.util.Random;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.io.IOException;
+import java.util.Random;
 
 /**
  * Represents user configuration of the game.
+ *
  * @author Andrew Fargo
  */
 public class GameOptions {
@@ -23,9 +24,10 @@ public class GameOptions {
   private int guesses;
   /** True if random seed is used, false if fixed seed. */
   private boolean shouldScore;
+
   /**
-   * Constructor for default values.
-   * Should use the setters for other values.
+   * Constructor for default values. Should use the setters for other values.
+   *
    * @throws IOException If files aren't valid.
    */
   public GameOptions() throws IOException {
@@ -50,10 +52,11 @@ public class GameOptions {
 
   /**
    * Mutator for the word list.
+   *
    * @param path Path to the word list.
    * @throws IOException if the path is invalid.
    */
-  public void setWordlist(String path) throws IOException {
+  public final void setWordlist(String path) throws IOException {
     if (path.isEmpty()) {
       return;
     } // if
@@ -63,10 +66,11 @@ public class GameOptions {
 
   /**
    * Mutator for the checklist.
+   *
    * @param path Path to the checklist.
    * @throws IOException if the path is invalid.
    */
-  public void setChecklist(String path) throws IOException {
+  public final void setChecklist(String path) throws IOException {
     if (path.isEmpty()) {
       return;
     } // if
@@ -76,9 +80,10 @@ public class GameOptions {
 
   /**
    * Sets the save file.
+   *
    * @param path Path to the save file.
    */
-  public void setSavefile(String path) {
+  public final void setSavefile(String path) {
     if (path.isEmpty()) {
       return;
     } // if
@@ -87,19 +92,20 @@ public class GameOptions {
 
   /**
    * Sets the number of guesses allowed.
+   *
    * @param guessesProvided The number specified.
    */
-  public void setGuesses(int guessesProvided) {
+  public final void setGuesses(int guessesProvided) {
     this.guesses = guessesProvided;
   } // setGuesses(int)
 
   /**
-   * Sets the seed, or generates a random seed if empty.
-   * Sets whether or not the game should be scored,
-   * accordingly.
+   * Sets the seed, or generates a random seed if empty. Sets whether or not the game should be
+   * scored, accordingly.
+   *
    * @param seedOrNone Optional representing the seed or nothing.
    */
-  public void setSeed(Optional<Long> seedOrNone) {
+  public final void setSeed(Optional<Long> seedOrNone) {
     this.shouldScore = seedOrNone.isEmpty();
     Random rng = new Random();
     this.seed = seedOrNone.isPresent() ? seedOrNone.get() : rng.nextLong();
@@ -107,6 +113,7 @@ public class GameOptions {
 
   /**
    * Accessor for word list.
+   *
    * @return The word list path.
    */
   public Path getWordlist() {
@@ -115,6 +122,7 @@ public class GameOptions {
 
   /**
    * Accessor for check list.
+   *
    * @return The check list path.
    */
   public Path getChecklist() {
@@ -123,6 +131,7 @@ public class GameOptions {
 
   /**
    * Accessor for save file.
+   *
    * @return The save file path.
    */
   public Path getSavefile() {
@@ -131,6 +140,7 @@ public class GameOptions {
 
   /**
    * Accessor for the seed.
+   *
    * @return The seed used.
    */
   public long getSeed() {
@@ -139,6 +149,7 @@ public class GameOptions {
 
   /**
    * Accessor for the guess count.
+   *
    * @return The number of guesses allowed.
    */
   public int getGuesses() {
@@ -147,6 +158,7 @@ public class GameOptions {
 
   /**
    * Accessor for score validity.
+   *
    * @return true if the score should be counted, false otherwise.
    */
   public boolean getValid() {

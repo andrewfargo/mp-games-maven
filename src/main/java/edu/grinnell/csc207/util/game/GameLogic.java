@@ -31,11 +31,6 @@ public class GameLogic {
   } // enum GameState
 
   /**
-   * The default number of rows.
-   */
-  static final int DEFAULT_HEIGHT = 6;
-
-  /**
    * The ANSI code for the color white.
    */
   static final String ANSI_RESET = "\u001B[0m";
@@ -62,12 +57,12 @@ public class GameLogic {
   /**
    * Handles generation and validation of words.
    */
-  private Words words;
+  private final Words words;
 
   /**
    * Handles options passed to the game logic.
    */
-  private GameOptions opts;
+  private final GameOptions opts;
 
   /**
    * The number of guesses the player has made.
@@ -82,7 +77,7 @@ public class GameLogic {
   /**
    * Keeps track of current wins.
    */
-  private Scores scores;
+  private final Scores scores;
 
   // +-------------+---------------------------------------------------
   // | Constructor |
@@ -90,10 +85,10 @@ public class GameLogic {
 
   /**
    * Create a new game.
+   *
    * @param options The options used.
    */
-  public GameLogic(GameOptions options)
-      throws IOException {
+  public GameLogic(GameOptions options) throws IOException {
     this.words = new Words(options);
     this.opts = options;
     this.scores = new Scores(this.opts.getSavefile());
@@ -110,7 +105,7 @@ public class GameLogic {
   public final void reset() {
     this.guessesMade = 0;
     this.target = (words.next()).toUpperCase();
-    this.board = new MatrixV0<String>(this.target.length(), this.opts.getGuesses(), " ");
+    this.board = new MatrixV0<>(this.target.length(), this.opts.getGuesses(), " ");
   } // reset()
 
   /**
@@ -135,6 +130,7 @@ public class GameLogic {
 
   /**
    * Formats a single guess, coloring the letters appropriately.
+   *
    * @param guess The guessed word
    * @return A string of the guessed words characters outfixed with ANSI codes
    */
@@ -152,7 +148,7 @@ public class GameLogic {
     for (int i = 0; i < targetArray.length; i++) {
       if (targetArray[i] == guessArray[i]) {
         formatArray[i] = ANSI_GREEN + guessArray[i] + ANSI_RESET;
-        guessArray[i] =  '#';
+        guessArray[i] = '#';
       } // if
     } // for
     for (int i = 0; i < targetArray.length; i++) {
@@ -211,6 +207,7 @@ public class GameLogic {
 
   /**
    * Calculates and returns the guesses left before game over.
+   *
    * @return The guesses left.
    */
   public int getGuessesLeft() {
@@ -219,6 +216,7 @@ public class GameLogic {
 
   /**
    * Scores getter.
+   *
    * @return The scores object
    */
   public Scores getScores() {

@@ -11,6 +11,7 @@ import edu.grinnell.csc207.util.game.GameOptions;
 
 /**
  * Handles all input and output from the user.
+ *
  * @author Khanh Do
  * @author Andrew Fargo
  */
@@ -78,9 +79,11 @@ public class UserInterface {
 
   /**
    * The main method for the Wordle game.
+   *
    * @param args Ignored
    * @throws IOException If files used are invalid.
    */
+  @SuppressWarnings("ConvertToTryWithResources")
   public static void main(String[] args) throws IOException {
     PrintWriter pen = new PrintWriter(System.out, true);
     BufferedReader eyes = new BufferedReader(new InputStreamReader(System.in));
@@ -110,11 +113,11 @@ public class UserInterface {
           pen.printf(game.getScores().toString());
           break;
         case "3":
-            // Instructions
+          // Instructions
           pen.print(UserInterface.INSTRUCTIONS);
           break;
         case "4":
-            // Quit
+          // Quit
           game.getScores().save();
           pen.println("Thanks for playing WORDLE!");
           shouldRun = false;
@@ -131,16 +134,15 @@ public class UserInterface {
             builder.setSavefile(eyes.readLine());
             pen.printf("Enter seed (or empty if random; only scores random): ");
             String seed = eyes.readLine();
-            builder.setSeed(seed.isEmpty() ? Optional.empty()
-                            : Optional.of(Long.valueOf(seed)));
+            builder.setSeed(seed.isEmpty() ? Optional.empty() : Optional.of(Long.valueOf(seed)));
             pen.printf("Enter guesses allowed (or empty if unchanged): ");
             String guesses = eyes.readLine();
             if (!guesses.isEmpty()) {
-              builder.setGuesses(Integer.valueOf(guesses));
+              builder.setGuesses(Integer.parseInt(guesses));
             } // if
             UserInterface.opts = builder;
             game = new GameLogic(UserInterface.opts);
-          } catch (Exception e) {
+          } catch (IOException | NumberFormatException e) {
             pen.println(e.getMessage());
             break;
           } // try/catch
@@ -154,8 +156,10 @@ public class UserInterface {
     pen.close();
     eyes.close();
   } // main
+
   /**
    * One iteration of the game.
+   *
    * @param pen Output
    * @param eye Input
    * @throws IOException if configured files are invalid.
@@ -165,8 +169,7 @@ public class UserInterface {
 
     boolean shouldRun = true;
     while (shouldRun) {
-      pen.printf("%s\nYou have %d guesses left.\n Enter your guess: ",
-                 game, game.getGuessesLeft());
+      pen.printf("%s\nYou have %d guesses left.\n Enter your guess: ", game, game.getGuessesLeft());
 
       switch (game.registerGuess(eye.readLine())) {
         case REDO:
